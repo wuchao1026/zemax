@@ -1,0 +1,50 @@
+*{box-sizing:border-box}
+body{margin:0;background:#f7f7f9;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+.page{max-width:1380px;margin:34px auto;padding:0 20px}
+.layout{position:relative;padding-left:304px}
+.sidebar{position:fixed;top:24px;left:max(20px,calc((100vw - 1380px)/2 + 20px));width:280px;max-height:calc(100vh - 48px);overflow:auto;background:#fff;border:1px solid #e6e6ee;border-radius:16px;padding:18px 14px;box-shadow:0 6px 18px rgba(17,24,39,.05)}
+.sidebar-title{padding:0 10px 12px;font-size:14px;font-weight:600;color:#111827}
+.nav-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.nav-item{width:100%;border:0;background:transparent;border-radius:12px;padding:11px 10px;display:flex;align-items:center;justify-content:space-between;color:#4b5563;cursor:pointer;text-align:left}
+.nav-item:hover{background:#f5f7fb;color:#111827}
+.nav-item.active{background:#eef3ff;color:#315efb}
+.nav-name{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-count{min-width:28px;height:22px;padding:0 8px;border-radius:999px;background:rgba(49,94,251,.08);display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.content{min-width:0}
+.toolbar{margin-bottom:28px}
+.search-box{position:relative}
+.search{width:100%;height:62px;padding:0 66px 0 22px;border:1px solid #d9dfeb;border-radius:12px;background:#fff;color:#111827;font-size:14px;outline:none;box-shadow:0 2px 8px rgba(17,24,39,.03)}
+.search:focus{border-color:#315efb;box-shadow:0 0 0 3px rgba(49,94,251,.12)}
+.search::placeholder{color:#9aa3b2}
+.search-btn{position:absolute;top:50%;right:14px;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:10px;background:#f5f7fb;color:#4b5563;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.search-btn:hover{background:#eef3ff;color:#315efb}
+.search-btn .search-icon{width:18px;height:18px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.card{background:#fff;border:1px solid #e6e6ee;border-radius:14px;box-shadow:0 6px 18px rgba(17,24,39,.05);display:flex;flex-direction:column;height:330px;overflow:hidden;transition:box-shadow .2s,border-color .2s}
+.card:hover{box-shadow:0 10px 24px rgba(17,24,39,.08);border-color:#dfe3ee}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:20px 16px 17px;border-bottom:1px solid #f1f3f8}
+.fn{font-weight:600;font-size:16px;color:#111827}
+.type{font-size:12px;background:#f3f6ff;color:#315efb;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.desc-wrap{flex:1;padding:20px 16px 11px;overflow:hidden}
+.desc{line-height:1.75;color:#374151;word-break:break-word;white-space:pre-wrap;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:7;overflow:hidden}
+.card-actions{display:flex;align-items:center;justify-content:center;padding:0 16px 20px}
+.toggle{appearance:none;border:0;background:transparent;color:#6b7280;min-width:45px;height:39px;padding:0 11px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.toggle:hover{color:#111827}
+.toggle.is-disabled{opacity:.35;cursor:default}
+.toggle .icon{width:24px;height:24px;transition:transform .2s}
+.card.expanded{height:auto}
+.card.expanded .desc{display:block;overflow:visible}
+.card.expanded .toggle .icon{transform:rotate(180deg)}
+.card.hidden{display:none}
+.empty{padding:25px;background:#fff6e5;border:1px dashed #f2c46d;border-radius:10px;color:#8a6d3b}
+.search-empty{display:none;padding:25px;background:#fff;border:1px dashed #d9dfeb;border-radius:10px;color:#6b7280;text-align:center}
+.search-empty.show{display:block}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (max-width: 1100px){
+  .layout{padding-left:0}
+  .sidebar{position:static;width:auto;max-height:none;overflow:visible;margin-bottom:20px}
+}
+@media (max-width: 768px){
+  .nav-list{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+}

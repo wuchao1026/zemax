@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>评价函数一览（静态导出）</title>
+  <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+  <div class="page">
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-title">类型导航</div>
+        <div class="nav-list">
+          {% for nav in nav_types %}
+          <button class="nav-item{% if loop.first %} active{% endif %}" type="button" data-type="{{ nav.key }}" title="{{ nav.key }}">
+            <span class="nav-name">{{ nav.name }}</span>
+            <span class="nav-count">{{ nav.count }}</span>
+          </button>
+          {% endfor %}
+        </div>
+      </aside>
+      <main class="content">
+        <div class="toolbar">
+          <div class="search-box">
+            <input id="searchInput" class="search" type="text" placeholder="搜索函数名、类型或详细解释">
+            <button id="searchButton" class="search-btn" type="button" title="搜索">
+              <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <circle cx="7" cy="7" r="4.5"></circle>
+                <path d="M10.5 10.5L14 14" stroke-linecap="round"></path>
+              </svg>
+              <span class="sr-only">搜索</span>
+            </button>
+          </div>
+        </div>
+        <div class="grid">
+          {% for item in items %}
+          <div class="card" data-type="{{ item.nav_type or item.type or '未分类' }}" data-name="{{ item.name }}" data-raw-type="{{ item.type or '未分类' }}" data-desc="{{ item.desc }}">
+            <div class="card-header">
+              <div class="fn">{{ item.name }}</div>
+              <div class="type">{{ item.type or '未分类' }}</div>
+            </div>
+            <div class="desc-wrap">
+              <div class="desc">{{ item.desc }}</div>
+            </div>
+            <div class="card-actions">
+              <button class="toggle" aria-expanded="false" title="展开/收起">
+                <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <span class="sr-only">展开/收起</span>
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+          {% if not items %}
+          <div class="empty">未读取到数据。请确认 {{ file_name }} 存在并包含三列：函数名、详细解释、类型。</div>
+          {% endif %}
+        </div>
+        <div id="searchEmpty" class="search-empty">没有找到匹配的评价函数</div>
+      </main>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var searchInput = document.getElementById('searchInput');
+      var searchButton = document.getElementById('searchButton');
+      var searchEmpty = document.getElementById('searchEmpty');
+      var activeType = '全部';
+      var appliedKeyword = '';
+      function attachToggle(card){
+        var btn = card.querySelector('.toggle');
+        if (!btn) return;
+        btn.addEventListener('click', function(){
+          if (btn.getAttribute('aria-disabled') === 'true') {
+            return;
+          }
+          var expanded = card.classList.toggle('expanded');
+          btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+          updateControls();
+        });
+      }
+      function updateControls(){
+        document.querySelectorAll('.card').forEach(function(card){
+          var content = card.querySelector('.desc');
+          var btn = card.querySelector('.toggle');
+          if (!content || !btn) return;
+          var expanded = card.classList.contains('expanded');
+          if (expanded) {
+            card.classList.remove('expanded');
+          }
+          var need = content.scrollHeight > content.clientHeight + 2;
+          if (expanded && need) {
+            card.classList.add('expanded');
+          }
+          btn.classList.toggle('is-disabled', !need);
+          btn.setAttribute('aria-disabled', need ? 'false' : 'true');
+          btn.setAttribute('aria-expanded', card.classList.contains('expanded') ? 'true' : 'false');
+        });
+      }
+      function applyFilters(){
+        var keyword = appliedKeyword;
+        var visibleCount = 0;
+        document.querySelectorAll('.card').forEach(function(card){
+          var typeName = (card.dataset.type || '').toLowerCase();
+          var matchedType = activeType === '全部' || typeName === activeType.toLowerCase();
+          var searchText = [
+            card.dataset.name || '',
+            card.dataset.rawType || '',
+            card.dataset.type || '',
+            card.dataset.desc || ''
+          ].join(' ').toLowerCase();
+          var matchedKeyword = !keyword || searchText.indexOf(keyword) !== -1;
+          var matched = matchedType && matchedKeyword;
+          card.classList.toggle('hidden', !matched);
+          if (matched) visibleCount += 1;
+        });
+        if (searchEmpty) {
+          searchEmpty.classList.toggle('show', visibleCount === 0 && document.querySelectorAll('.card').length > 0);
+        }
+      }
+      function submitSearch(){
+        appliedKeyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        applyFilters();
+      }
+      function syncClearedSearch(){
+        if (searchInput && !searchInput.value.trim()) {
+          appliedKeyword = '';
+        }
+      }
+      document.querySelectorAll('.nav-item').forEach(function(item){
+        item.addEventListener('click', function(){
+          syncClearedSearch();
+          activeType = item.dataset.type || '全部';
+          document.querySelectorAll('.nav-item').forEach(function(nav){
+            nav.classList.toggle('active', nav === item);
+          });
+          applyFilters();
+        });
+      });
+      document.querySelectorAll('.card').forEach(function(card){
+        attachToggle(card);
+      });
+      window.requestAnimationFrame(updateControls);
+      applyFilters();
+      if (searchButton) {
+        searchButton.addEventListener('click', submitSearch);
+      }
+      if (searchInput) {
+        searchInput.addEventListener('keydown', function(event){
+          if (event.key === 'Enter') {
+            submitSearch();
+          }
+        });
+      }
+      window.addEventListener('resize', updateControls);
+      window.addEventListener('load', updateControls);
+    });
+  </script>
+</body>
+</html>
